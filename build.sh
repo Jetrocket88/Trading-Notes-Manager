@@ -4,5 +4,5 @@ pyinstaller \
     --name=NotesManager\
     src/main.py;
 
-echo "running program now..."
+echo "./dist/NotesManager/NotesManager.exe"
 ./dist/NotesManager/NotesManager.exe;

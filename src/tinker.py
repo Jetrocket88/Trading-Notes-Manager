@@ -2,106 +2,47 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import font 
 
-import database as db
-import helpers as h
+import database
+import helpers
+import styles
 
-
-backgroundColor = "gray8"
-textColor = "whitesmoke"
-defaultFont = None
-
-def setBackgrounds(widget, color):
-    try:
-        widget.configure(bg=color)
-            
-    except tk.TclError:
-        pass
-    for child in widget.winfo_children():
-        setBackgrounds(child, color)
-
-def getDefaultFont(root):
-    global defaultFont
-    if defaultFont is None:
-        defaultFont = font.Font(
-            root=root,
-            family="Verdana",
-            size=14,
-            weight="normal"
-        )
-    return defaultFont
-
-def placeComponentCenter(component, pos, root):
-    root.update_idletasks()
-    component.place(x=pos[0], y=pos[1], anchor="center")
-
-def placeComponentCorner(component, pos, root):
-    root.update_idletasks()
-    component.place(x=pos[0], y=pos[1])
 
 def initWindow(width, height, pos):
     root = tk.Tk()
-    style = ttk.Style()
-    style.theme_use("clam")
     root.title("Trading Notes")
 
     root.geometry(f"+{pos[0]}+{pos[1]}")
     root.geometry(f"{width}x{height}")
 
-    root.protocol("WM_DELETE_WINDOW", lambda: h.exit(db.connect(), root))
-    root.configure(bg=backgroundColor)
-    getDefaultFont(root)
+    root.protocol("WM_DELETE_WINDOW", lambda: helpers.exit(database.connect(), root))
+    root.configure(bg=styles.BACKGROUND_COLOR)
     return root
 
-def makeStaticLabel(root, text, pos, color=None, backgroundColor=None, padX=0, padY=0, fontSize=None):
-    if backgroundColor is None:
-        backgroundColor = root["bg"]
-
-    if color is None:
-        color = textColor
-
-    newFont = font.Font(root=root, font=defaultFont)
+def makeStaticLabel(root, container, text, fontSize=None):
+    newFont = font.Font(root=root, font=styles.getDefaultFont())
     if fontSize is not None:
         newFont.configure(size=fontSize)
 
-    temp = tk.Label(
-        root,
+    temp = ttk.Label(
+        container,
         text=text,
         font=newFont,
-        fg=color,
-        bg=backgroundColor,
-        padx=padX,
-        pady=padY
     )
-    placeComponentCenter(temp, pos, root)
     return temp
 
 
-def makeDynamicLabel(root, textVar, pos,
-                     color=None, backgroundColor=None,
-                     padX=0, padY=0, fontSize=None):
+def makeDynamicLabel(root, container, textVar, fontSize=None):
 
-    if backgroundColor is None:
-        backgroundColor = root["bg"]
-
-    if color is None:
-        color = textColor
-
-    newFont = font.Font(root=root, font=defaultFont)
+    newFont = font.Font(root=root, font=styles.getDefaultFont())
     if fontSize is not None:
         newFont.configure(size=fontSize)
 
-    temp = tk.Label(
-        root,
+    temp = ttk.Label(
+        container,
         textvariable=textVar,
         font=newFont,
-        fg=color,
-        bg=backgroundColor,
-        padx=padX,
-        pady=padY
     )
-    placeComponentCenter(temp, pos, root)
     return temp
-
 
 def makeTextVar(text):
     temp = tk.StringVar()
@@ -110,102 +51,105 @@ def makeTextVar(text):
 
 
 def updateTime(root, textVar):
-    textVar.set(db.getNow())
+    textVar.set(database.getNow())
     root.after(1000, updateTime, root, textVar)
 
 
-def makeButton(root, text, command, pos,
-               color=None, backgroundColor=None,
-               padx=0, pady=0, fontSize=None):
-
-    if backgroundColor is None:
-        backgroundColor = root["bg"]
-
-    if color is None:
-        color = textColor
-
-    newFont = font.Font(root=root, font=defaultFont)
-    if fontSize is not None:
-        newFont.configure(size=fontSize)
-
-    button = tk.Button(
-        root,
-        text=text,
-        command=command,
-        bg=backgroundColor,
-        fg=color,
-        font=newFont,
-        bd=2,
-        highlightthickness=0,
-        padx=padx,
-        pady=pady
-    )
-
-    placeComponentCenter(button, pos, root)
-    return button
-
-def exitPopup(root, popup):
-    global backgroundColor
-    setBackgrounds(root, backgroundColor)
+def exitPopup(popup):
     popup.destroy()
 
 
+def applyThemeRecursive(widget, style=None, bgColor=None):
+    if isinstance(widget, ttk.Widget):
+        if style is not None:
+            widgetClass = widget.winfo_class()
+            fullStyle = f"{style}.{widgetClass}"
+            try:
+                widget.configure(style=fullStyle)
+            except tk.TclError:
+                pass
+        else:
+            if bgColor is not None:
+                try:
+                    widget.configure(bg=bgColor)
+                except tk.TclError:
+                    pass
+    for child in widget.winfo_children():
+        applyThemeRecursive(child, style, bgColor)
+    
+
+
 def openPopup(root, title, dim):
-    global backgroundColor
     popup = tk.Toplevel(root)
     popup.title(title)
-
-    #width and height
-    popup.geometry(f"{dim[0]}x{dim[1]}")
 
     #position
     popup.update_idletasks()
     x = root.winfo_x() + root.winfo_width()  // 2
     y = root.winfo_y() + root.winfo_height() // 2 - 90
-    popup.geometry(f"+{x}+{y}")
+    popup.geometry(f"{dim[0]}x{dim[1]}+{x}+{y}")
 
-    popup.protocol("WM_DELETE_WINDOW", lambda: exitPopup(root, popup))
-
-    style = ttk.Style()
-    style.theme_use("clam")
+    popup.protocol("WM_DELETE_WINDOW", lambda: exitPopup(popup))
 
     popup.transient(root)
     popup.grab_set()
     popup.resizable(False, False)
 
-    setBackgrounds(root, "gray18")
-    popup.configure(bg=backgroundColor)
+    popup.configure(bg=styles.BACKGROUND_COLOR)
+
+    #change root to have unused background color
+    #applyThemeRecursive(root, "Unused Window", styles.UNUSED_BACKGROUND_COLOR)
+    
     return popup
 
-def makeScrollableText(root, pos, dim):
-
-    container = tk.Frame(root, bg=root["bg"])
-    container.place(x=pos[0], y=pos[1], width=dim[0], height=dim[1])
-
-    text = tk.Text(
+def makeButton(container, text, command, style="TButton"):
+    button = ttk.Button(
         container,
-        wrap="word",
-        bd=0,
-        highlightthickness=1,
-        relief="solid"
+        text=text,
+        command=command,
+        style=style
     )
-
-    scrollbar = ttk.Scrollbar(container, orient="vertical", command=text.yview)
-    text.configure(yscrollcommand=scrollbar.set)
-
-    text.place(x=0, y=0, width=dim[0]-15, height=dim[1])
-    scrollbar.place(x=dim[0]-15, y=0, width=15, height=dim[1])
-
-    return text
+    return button
 
 
-def makeInput(root, inputDict, name, pos, dims, multiline=False):
-    if multiline:
-        widget = makeScrollableText(root, pos, dims)
-    else:
-        widget = tk.Entry(root, width=dims[0])
-        placeComponentCorner(widget, pos, root)
-    inputDict[name] = widget
-    return widget
-
-
+def makeScrollableFrame(parent, padding=20):
+    """Create a scrollable frame - COMPLETE WORKING VERSION"""
+    # Main frame to hold everything
+    main_frame = ttk.Frame(parent)
+    main_frame.pack(fill="both", expand=True)
+    
+    # Canvas
+    canvas = tk.Canvas(main_frame, bg=styles.BACKGROUND_COLOR, highlightthickness=0)
+    canvas.pack(side="left", fill="both", expand=True)
+    
+    # Scrollbar
+    scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+    scrollbar.pack(side="right", fill="y")
+    
+    # Configure canvas
+    canvas.configure(yscrollcommand=scrollbar.set)
+    
+    # Frame inside canvas
+    container = ttk.Frame(canvas, padding=padding)
+    canvas_window = canvas.create_window((0, 0), window=container, anchor="nw")
+    
+    # Update scrollregion when container size changes
+    def configure_scroll(event=None):
+        canvas.configure(scrollregion=canvas.bbox("all"))
+        canvas.itemconfig(canvas_window, width=canvas.winfo_width())
+    
+    container.bind("<Configure>", configure_scroll)
+    canvas.bind("<Configure>", configure_scroll)
+    
+    # Mousewheel scrolling
+    def on_mousewheel(event):
+        canvas.yview_scroll(-1 * int(event.delta / 120), "units")
+    
+    canvas.bind_all("<MouseWheel>", on_mousewheel)
+    
+    # Manual update function
+    def update_scroll():
+        parent.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox("all"))
+    
+    return container, update_scroll

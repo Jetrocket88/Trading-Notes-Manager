@@ -18,7 +18,7 @@ def initWindow(width, height, pos):
     root.configure(bg=styles.BACKGROUND_COLOR)
     return root
 
-def makeStaticLabel(root, container, text, fontSize=None):
+def makeStaticLabel(root, container, text, fontSize=None, width=30):
     newFont = font.Font(root=root, font=styles.getDefaultFont())
     if fontSize is not None:
         newFont.configure(size=fontSize)
@@ -28,6 +28,7 @@ def makeStaticLabel(root, container, text, fontSize=None):
         text=text,
         font=newFont,
     )
+    temp.configure(width=width)
     return temp
 
 
@@ -113,27 +114,25 @@ def makeButton(container, text, command, style="TButton"):
 
 
 def makeScrollableFrame(parent, padding=20):
-    """Create a scrollable frame - COMPLETE WORKING VERSION"""
-    # Main frame to hold everything
     main_frame = ttk.Frame(parent)
     main_frame.pack(fill="both", expand=True)
     
-    # Canvas
     canvas = tk.Canvas(main_frame, bg=styles.BACKGROUND_COLOR, highlightthickness=0)
     canvas.pack(side="left", fill="both", expand=True)
     
-    # Scrollbar
-    scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+    scrollbar = ttk.Scrollbar(
+        main_frame, 
+        orient="vertical", 
+        command=canvas.yview,
+        style="Invisible.Vertical.TScrollbar"
+    )
     scrollbar.pack(side="right", fill="y")
     
-    # Configure canvas
     canvas.configure(yscrollcommand=scrollbar.set)
     
-    # Frame inside canvas
     container = ttk.Frame(canvas, padding=padding)
     canvas_window = canvas.create_window((0, 0), window=container, anchor="nw")
     
-    # Update scrollregion when container size changes
     def configure_scroll(event=None):
         canvas.configure(scrollregion=canvas.bbox("all"))
         canvas.itemconfig(canvas_window, width=canvas.winfo_width())
@@ -141,15 +140,14 @@ def makeScrollableFrame(parent, padding=20):
     container.bind("<Configure>", configure_scroll)
     canvas.bind("<Configure>", configure_scroll)
     
-    # Mousewheel scrolling
     def on_mousewheel(event):
-        canvas.yview_scroll(-1 * int(event.delta / 120), "units")
+        if event.delta > 0:
+            if canvas.yview()[0] > 0.0:
+                canvas.yview_scroll(-1, "units")
+        else:
+            if canvas.yview()[1] < 1.0:
+                canvas.yview_scroll(1, "units")
     
     canvas.bind_all("<MouseWheel>", on_mousewheel)
     
-    # Manual update function
-    def update_scroll():
-        parent.update_idletasks()
-        canvas.configure(scrollregion=canvas.bbox("all"))
-    
-    return container, update_scroll
+    return container 

@@ -43,11 +43,7 @@ def getNow():
     return datetime.now().isoformat(sep=" ", timespec="seconds")
 
 
-def insertToDb(
-    entryTime, exitTime, structure, type1, bias,
-    risk, result, emotions, takeaways, accountType,
-    riskToRR
-):
+def insertToDb(values):
 
     conn = connect()
     cursor = conn.cursor()
@@ -58,8 +54,8 @@ def insertToDb(
                 risk, result, emotions, takeaways, accountType, rewardRatio
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-            entryTime, exitTime, structure, type1.lower(), bias,
-            risk, result.lower(), emotions, takeaways, accountType.lower(), riskToRR
+            values[0], values[1], values[2], values[3].lower(), values[4],
+            values[5], values[6].lower(), values[7], values[8], values[9].lower(), values[10] 
         ))
         conn.commit()
         messagebox.showinfo("Success", "Trade added")

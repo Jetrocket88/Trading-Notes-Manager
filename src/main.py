@@ -21,8 +21,15 @@ def addTodaysDateToWidget(widget, text, position="end"):
     widget.insert(position, text)
 
 
-def submitAll(inputDict):
-    pass
+def getInputValues(inputDict):
+    values = [
+        widget.get("1.0", "end-1c") if isinstance(widget, tk.Text)
+        else widget.get()
+        for widget in inputDict.values()
+    ]   
+    return values
+
+
 
 def manageTradeEntryWindow(root):
     #window stuff
@@ -185,7 +192,7 @@ def manageTradeEntryWindow(root):
     rewardRatioInput.grid(row=21, column=0, pady=(0, 10), sticky="ew", padx=(leftPad, 0))
     inputDict["rewardRatio"] = rewardRatioInput 
 
-    submitButton = tinker.makeButton(container, "Submit", lambda: submitAll(inputDict))
+    submitButton = tinker.makeButton(container, "Submit", lambda: database.insertToDb(getInputValues(inputDict)))
     submitButton.grid(row=22, column=0, pady=(10, 10), padx=(10, 10), columnspan=3, sticky="we")
     
     return popup

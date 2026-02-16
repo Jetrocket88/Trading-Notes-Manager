@@ -1,6 +1,0 @@
-market structure -> what was happening and why did you enter
-bias -> was the trade aligned with my original bias (was it right or wrong)
-risk -> how much of the account size did you risk in %
-result -> Win/Loss/BE
-emotions -> how did you feel during the trade
-takeaways -> Post trade analysis 

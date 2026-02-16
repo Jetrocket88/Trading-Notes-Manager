@@ -33,7 +33,7 @@ def initDb():
                 rewardRatio REAL NOT NULL,
 
                 CHECK(result IN ("win", "loss", "be")),
-                CHECK(type IN ("interday", "swing")),
+                CHECK(type IN ("inter-day", "swing")),
                 CHECK(accountType IN ("live", "paper", "eval"))
             );
         """)

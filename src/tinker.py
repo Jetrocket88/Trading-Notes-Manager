@@ -60,25 +60,6 @@ def exitPopup(popup):
     popup.destroy()
 
 
-def applyThemeRecursive(widget, style=None, bgColor=None):
-    if isinstance(widget, ttk.Widget):
-        if style is not None:
-            widgetClass = widget.winfo_class()
-            fullStyle = f"{style}.{widgetClass}"
-            try:
-                widget.configure(style=fullStyle)
-            except tk.TclError:
-                pass
-        else:
-            if bgColor is not None:
-                try:
-                    widget.configure(bg=bgColor)
-                except tk.TclError:
-                    pass
-    for child in widget.winfo_children():
-        applyThemeRecursive(child, style, bgColor)
-    
-
 
 def openPopup(root, title, dim):
     popup = tk.Toplevel(root)
@@ -151,3 +132,50 @@ def makeScrollableFrame(parent, padding=20):
     canvas.bind_all("<MouseWheel>", on_mousewheel)
     
     return container 
+
+
+def makeScrollableText(parent, height=40, width=None, font=None):
+
+    container = ttk.Frame(parent)
+    textWidget = tk.Text(container, height=height, wrap="word")
+    if width:
+        textWidget.configure(width=width)
+    if font:
+        textWidget.configure(font=font)
+
+
+    scrollbar = ttk.Scrollbar(container, orient="vertical", command=textWidget.yview)
+    textWidget.configure(yscrollcommand=scrollbar.set)
+
+    textWidget.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+    return container, textWidget 
+
+
+def makeInput(parent, inputDict, name, width=40, height=5, multiline=False, font=None):
+    if multiline:
+        # Returns container frame + text widget
+        container, widget = makeScrollableText(parent, width=width, height=height, font=font)
+        inputDict[name] = widget
+        return container
+    else:
+        widget = ttk.Entry(
+            parent,
+            width=width,
+        )
+        inputDict[name] = widget
+        return widget
+
+def makeComboBox(container, values):
+    combo = ttk.Combobox(
+        container,
+        values=values,
+        state="readonly"
+    )
+    combo.current(0)
+    return combo
+
+
+
+

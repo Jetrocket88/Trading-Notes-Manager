@@ -1,48 +1,41 @@
-from tkinter import ttk
-import tkinter as tk
-
+import tinker
 import styles
 
-def makeScrollableText(parent, height=40, width=None, font=None):
 
-    container = ttk.Frame(parent)
-    textWidget = tk.Text(container, height=height, wrap="word")
-    if width:
-        textWidget.configure(width=width)
-    if font:
-        textWidget.configure(font=font)
+def addLabel(popup, container, text, row, leftPad=10):
+    label = tinker.makeStaticLabel(popup, container, text)
+    label.grid(row=row, column=0, pady=(10, 0), padx=leftPad, sticky="w")
+    return label
+
+def addHelp(popup, container, text, row, wrap=200, sticky="ns", column=1):
+    helpLabel = tinker.makeStaticLabel(popup, container, text, fontSize=7)
+    helpLabel.configure(foreground="gray38", wraplength=wrap)
+    helpLabel.grid(row=row, column=column, pady=(0, 0), padx=(10, 10), sticky=sticky)
+
+def addInput(container, inputDict, name, row, leftPad=10):
+    input = tinker.makeInput( container, inputDict, name, multiline=False )
+    input.grid(row=row, column=0, padx=(leftPad, 0), pady=(8, 10), sticky="ew")
+    return input
+
+def addButton(container, text, function, row):
+    button = tinker.makeButton(container, text,  function)
+    button.grid(row=row, column=2, pady=(0, 10))
+    return button
+
+def addTextarea(container, inputDict, name, row, leftPad=10, width=60, height=5):
+    font = styles.getDefaultFont()
+    font.configure(size=9)
+    input = tinker.makeInput(container, inputDict, name, multiline=True, width=width, height=height)
+    input.grid(row=row, column=0, padx=(leftPad, 0), pady=(8, 10), sticky="ew", columnspan=2)
+    return input
 
 
-    scrollbar = ttk.Scrollbar(container, orient="vertical", command=textWidget.yview)
-    textWidget.configure(yscrollcommand=scrollbar.set)
 
-    textWidget.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
-
-    return container, textWidget 
-
-
-def makeInput(parent, inputDict, name, width=40, height=5, multiline=False, font=None):
-    if multiline:
-        # Returns container frame + text widget
-        container, widget = makeScrollableText(parent, width=width, height=height, font=font)
-        inputDict[name] = widget
-        return container
-    else:
-        widget = ttk.Entry(
-            parent,
-            width=width,
-        )
-        inputDict[name] = widget
-        return widget
-
-def makeComboBox(container, values):
-    combo = ttk.Combobox(
-        container,
-        values=values,
-        state="readonly"
-    )
-    combo.current(0)
+def addCombo(container, list, inputDict, name, row, function, leftPad=10):
+    combo = tinker.makeComboBox(container, list)
+    combo.grid(column=0, row=row, sticky="ew", padx=(leftPad, 0), pady=(0, 0))
+    combo.bind("<Button-1>", function)
+    combo.bind("<FocusIn>", function)
+    inputDict[name] = combo 
     return combo
-
 

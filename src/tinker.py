@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font 
+from tkcalendar import Calendar
 
 import database
 import helpers
@@ -60,17 +61,34 @@ def exitPopup(popup):
     popup.destroy()
 
 
+def setPopupOpenPosition(root, popup, width=None, height=None):
+    # Wait for the popup to finish drawing so we can get its real size
+    popup.update_idletasks()
+
+    # Calculate center position relative to the parent window
+    rootX = root.winfo_x()
+    rootY = root.winfo_y()
+    rootW = root.winfo_width()
+    rootH = root.winfo_height()
+    popupW = popup.winfo_reqwidth()
+    popupH = popup.winfo_reqheight()
+
+    x = rootX + (rootW // 2) - (popupW // 2)
+    y = rootY + (rootH // 2) - (popupH // 2)
+
+    if width is None or height is None:
+        popup.geometry(f"+{x}+{y}")
+    else:
+        popup.geometry(f"{width}x{height}+{x}+{y}")
+
+
 
 def openPopup(root, title, dim):
     popup = tk.Toplevel(root)
     popup.title(title)
 
     #position
-    popup.update_idletasks()
-    x = root.winfo_x() + root.winfo_width()  // 2
-    y = root.winfo_y() + root.winfo_height() // 2 - 90
-    popup.geometry(f"{dim[0]}x{dim[1]}+{x}+{y}")
-
+    setPopupOpenPosition(root, popup, dim[0], dim[1])
     popup.protocol("WM_DELETE_WINDOW", lambda: exitPopup(popup))
 
     popup.transient(root)
@@ -176,6 +194,55 @@ def makeComboBox(container, values):
     combo.current(0)
     return combo
 
+def makeSpinBox(popup, range, format, variable, row, column):
+    spin = ttk.Spinbox(popup, 
+                       from_=range[0],
+                       to=range[1], 
+                       width=5,
+                       format=format,
+                       textvariable=variable,
+                       state="readonly",
+                       )
+    spin.grid(row=row, column=column, padx=(0, 10), pady=5)
+    return spin
+
+
+def openCalendarPopup(root, dateEntryWidget):
+    popup = tk.Toplevel(root)
+    popup.title("Select a Date and Time")
+    popup.transient(root)
+    popup.grab_set()
+    popup.resizable(False, False)
+    popup.configure(bg=styles.BACKGROUND_COLOR)
+    setPopupOpenPosition(root, popup, width=None, height=None)
+
+    cal = Calendar(popup, selectmode="day", date_pattern="yyyy-mm-dd", **styles.getCalendarStyle())
+    cal.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
+
+    hourLabel = makeStaticLabel(root, popup, "Hour: (0-23)")
+    hourLabel.grid(row=1, column=0, padx=(10, 5), pady=5)
+
+    minuteLabel = makeStaticLabel(root, popup, "Minute: (0-59)")
+    minuteLabel.grid(row=2, column=0, padx=(10, 5), pady=5)
+
+    hourVar = tk.StringVar(value="11")
+    minuteVar = tk.StringVar(value="59")
+
+    makeSpinBox(popup, (0, 23), "%02.0f", variable=hourVar, row=1, column=2)
+    makeSpinBox(popup, (0, 59), "%02.0f", variable=minuteVar, row=2, column=2)
+
+    timeGuideLabel = makeStaticLabel(root, popup, "Please Note! Use 24h time")
+    timeGuideLabel.grid(row=3, column=0, sticky="ew", columnspan=3, pady=5)
+    timeGuideLabel.configure(foreground="gray38")
 
 
 
+    def confirmDate():
+        date = cal.selection_get().strftime("%Y-%m-%d")
+        hour = hourVar.get().zfill(2)
+        minute = minuteVar.get().zfill(2)
+        dateEntryWidget.delete(0, tk.END)
+        dateEntryWidget.insert(0, f"{date} {hour}:{minute}")
+        popup.destroy()
+
+    ttk.Button(popup, text="Confirm", command=confirmDate).grid(row=4, column=0, columnspan=3, pady=(5, 15))

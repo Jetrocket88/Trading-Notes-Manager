@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 from tkinter import messagebox
+from platformdirs import user_data_dir
 
 
 
@@ -43,7 +44,7 @@ def getNow():
     return datetime.now().isoformat(sep=" ", timespec="seconds")
 
 
-def insertToDb(values):
+def insertToDb(data):
 
     conn = connect()
     cursor = conn.cursor()
@@ -54,8 +55,9 @@ def insertToDb(values):
                 risk, result, emotions, takeaways, accountType, rewardRatio
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-            values[0], values[1], values[2], values[3].lower(), values[4],
-            values[5], values[6].lower(), values[7], values[8], values[9].lower(), values[10] 
+            data["entryDate"], data["exitDate"], data["marketStructure"], data["type"].lower(), 
+            data["bias"], data["risk"], data["result"].lower(), data["emotions"],
+            data["takeaways"], data["accountType"].lower(), data["rewardRatio"] 
         ))
         conn.commit()
         messagebox.showinfo("Success", "Trade added")

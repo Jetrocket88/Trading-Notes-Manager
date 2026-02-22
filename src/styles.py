@@ -234,6 +234,33 @@ def initStyle(root):
             ("readonly", BORDER_COLOR)
         ]
     )
+
+    #spinbox
+    style.configure(
+        "TSpinbox",
+        fieldbackground=FIELD_COLOR,
+        background=FIELD_COLOR,
+        foreground=FOREGROUND_COLOR,
+        bordercolor=BORDER_COLOR,
+        lightcolor=BORDER_COLOR,
+        darkcolor=BORDER_COLOR,
+        arrowcolor=FOREGROUND_COLOR,
+        relief="solid",
+        borderwidth=1,
+        padding=(15, 12),
+        insertcolor=FOREGROUND_COLOR
+    )
+
+    style.map(
+        "TSpinbox",
+        fieldbackground=[("readonly", FIELD_COLOR)],
+        foreground=[("readonly", FOREGROUND_COLOR)],
+        background=[("readonly", FIELD_COLOR)],
+        bordercolor=[
+            ("focus", BORDER_COLOR),
+            ("!focus", BORDER_COLOR)
+        ]
+    )
     
     # Option add for better control
     root.option_add("*TCombobox*Listbox*selectBackground", FIELD_COLOR)
@@ -246,3 +273,24 @@ def initStyle(root):
     root.option_add("*TCombobox*Entry*background", FIELD_COLOR)
     
     return style
+
+def getCalendarStyle():
+    return {
+        "background": FIELD_COLOR,
+        "foreground": FOREGROUND_COLOR,
+        "bordercolor": BORDER_COLOR,
+        "headersbackground": FIELD_COLOR,
+        "headersforeground": FOREGROUND_COLOR,
+        "normalbackground": BACKGROUND_COLOR,
+        "normalforeground": FOREGROUND_COLOR,
+        "weekendbackground": BACKGROUND_COLOR,
+        "weekendforeground": FOREGROUND_COLOR,
+        "selectbackground": BORDER_COLOR,
+        "selectforeground": FOREGROUND_COLOR,
+        "othermonthbackground": BACKGROUND_COLOR,
+        "othermonthforeground": BORDER_COLOR,
+        "othermonthwebackground": BACKGROUND_COLOR,
+        "othermonthweforeground": BORDER_COLOR,
+        "todaybackground": FIELD_COLOR,
+        "todayforeground": FOREGROUND_COLOR,
+    }

@@ -1,6 +1,7 @@
 # src/main.py
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 
 import database
 import globals
@@ -21,6 +22,12 @@ def addTodaysDateToWidget(widget, text, position="end"):
     widget.insert(position, text)
 
 
+def getDataFromWidget(widget):
+    if isinstance(widget, tk.Text):
+        return widget.get("1.0", "end-1c") 
+    else:
+        return widget.get()
+
 def getInputValues(inputDict):
     values = [
         widget.get("1.0", "end-1c") if isinstance(widget, tk.Text)
@@ -28,6 +35,24 @@ def getInputValues(inputDict):
         for widget in inputDict.values()
     ]   
     return values
+
+
+def handleSubmitData(inputDict):
+    data = {}
+    errors = []
+
+    for key, value in inputDict.items():
+        result = getDataFromWidget(value)
+        if result is None or str(result).strip() == "":
+            errors.append(f"{key} cannot be empty")
+        else:
+            data[key] = result
+
+    if errors:
+        messagebox.showerror("Validation Error", "\n".join(errors))
+        return None
+    
+    database.insertToDb(data)
 
 
 
@@ -44,17 +69,21 @@ def manageTradeEntryWindow(root):
     container.rowconfigure(0, weight=0)
 
     inputDict = {}
-    leftPad = 10
 
-    wrap = 200
+    #date
     inputs.addLabel(popup, container, "Entry Date", row=0)
     entryDateInput = inputs.addInput(container, inputDict, "entryDate", row=1)
-    inputs.addButton(container, "Use Today's Date", lambda: addTodaysDateToWidget(entryDateInput, database.getNow()), row=1)
+    inputs.addButton(container, "Open Calendar", lambda: tinker.openCalendarPopup(popup,entryDateInput), row=1)
     inputs.addHelp(popup, container, "Should be in format\n(xx/xx/xx/xxxx)",row=1)
 
     inputs.addLabel(popup, container, "Exit Date", row=2)
     exitDateInput = inputs.addInput(container, inputDict, "exitDate", row=3)
-    inputs.addButton(container, "Use Today's Date", lambda: addTodaysDateToWidget(exitDateInput, database.getNow()), row=3)
+    inputs.addButton(container, "Open Calendar", lambda: tinker.openCalendarPopup(popup, exitDateInput), row=3)
+
+
+
+
+
 
     marketStrucutreText = "Talk about why you took the trade and confluences that made you certain in the direction of price"
     inputs.addLabel(popup, container, "Market Structure", row=4)
@@ -89,7 +118,7 @@ def manageTradeEntryWindow(root):
     emotionGuide = "How did you feel? FOMO?\nOvertrading?"
     inputs.addLabel(popup, container, "Emotions", row=14)
     inputs.addHelp(popup, container, emotionGuide, row=15, column=2)
-    inputs.addTextarea(container, inputDict, "emotion", row=15, height=3)
+    inputs.addTextarea(container, inputDict, "emotions", row=15, height=3)
 
     #Takeaways
     takeawayGuide = "What worked? What didn't?"
@@ -108,9 +137,14 @@ def manageTradeEntryWindow(root):
 
     inputs.addInput(container, inputDict, "rewardRatio", row=21)
 
-    submitButton = inputs.addButton(container, "Submit", lambda: database.insertToDb(getInputValues(inputDict)), row=22)
+    submitButton = inputs.addButton(container, "Submit", lambda: handleSubmitData(inputDict), row=22)
     submitButton.grid(columnspan=3, column=0, sticky="ew")
-    
+
+
+
+
+
+
     return popup
     
 
@@ -151,5 +185,6 @@ if __name__ == "__main__":
 
 
     #mainloop
-    root.mainloop()
     tinker.updateTime(root, currentTimeVar)
+    root.mainloop()
+

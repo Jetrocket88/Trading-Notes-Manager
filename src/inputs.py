@@ -30,7 +30,6 @@ def addTextarea(container, inputDict, name, row, leftPad=10, width=60, height=5)
     return input
 
 
-
 def addCombo(container, list, inputDict, name, row, function, leftPad=10):
     combo = tinker.makeComboBox(container, list)
     combo.grid(column=0, row=row, sticky="ew", padx=(leftPad, 0), pady=(0, 0))

@@ -169,12 +169,7 @@ if __name__ == "__main__":
     timeLabel.grid(row = 1, column = 0, pady=(0, 20), sticky="ew")
     timeLabel.configure(anchor="center")
 
-
-
-   #add trade button
-    button = tinker.makeButton(container=container, text="Add a trade", command=lambda: manageTradeEntryWindow(root))
-    button.grid(row=2, column=0)
-
+    button = inputs.addButton(container, "Add a trade", lambda: manageTradeEntryWindow(root), 2)
 
     #mainloop
     tinker.updateTime(root, currentTimeVar)

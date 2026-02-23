@@ -4,17 +4,16 @@ from pathlib import Path
 from tkinter import messagebox
 from platformdirs import user_data_dir
 
-
-
 def getDbPath():
-    appdata = Path.home() / "AppData" / "Local" / "TradingNotes"
+    appName = "TradingNotes"
+    appAuthor = "Harry Sharp" #myself
+    appdata = Path(user_data_dir(appName, appAuthor))
     appdata.mkdir(parents=True, exist_ok=True)
-    return appdata / "TradingNotes.db"
 
+    return appdata / "TradingNotes.db"
 
 def connect():
     return sqlite3.connect(getDbPath())
-
 
 def initDb():
     with connect() as conn:
@@ -45,7 +44,6 @@ def getNow():
 
 
 def insertToDb(data):
-
     conn = connect()
     cursor = conn.cursor()
     try:

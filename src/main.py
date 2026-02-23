@@ -80,11 +80,6 @@ def manageTradeEntryWindow(root):
     exitDateInput = inputs.addInput(container, inputDict, "exitDate", row=3)
     inputs.addButton(container, "Open Calendar", lambda: tinker.openCalendarPopup(popup, exitDateInput), row=3)
 
-
-
-
-
-
     marketStrucutreText = "Talk about why you took the trade and confluences that made you certain in the direction of price"
     inputs.addLabel(popup, container, "Market Structure", row=4)
     inputs.addHelp(popup, container, marketStrucutreText, row=5, column=2, sticky="ns")
@@ -140,11 +135,6 @@ def manageTradeEntryWindow(root):
     submitButton = inputs.addButton(container, "Submit", lambda: handleSubmitData(inputDict), row=22)
     submitButton.grid(columnspan=3, column=0, sticky="ew")
 
-
-
-
-
-
     return popup
     
 
@@ -179,7 +169,9 @@ if __name__ == "__main__":
     timeLabel.grid(row = 1, column = 0, pady=(0, 20), sticky="ew")
     timeLabel.configure(anchor="center")
 
-    #add trade button
+
+
+   #add trade button
     button = tinker.makeButton(container=container, text="Add a trade", command=lambda: manageTradeEntryWindow(root))
     button.grid(row=2, column=0)
 

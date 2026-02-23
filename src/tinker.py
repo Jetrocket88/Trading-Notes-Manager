@@ -1,7 +1,9 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import font 
 from tkcalendar import Calendar
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
+from tkinter import font
+from turtle import width 
 
 import database
 import helpers
@@ -88,7 +90,8 @@ def openPopup(root, title, dim):
     popup.title(title)
 
     #position
-    setPopupOpenPosition(root, popup, dim[0], dim[1])
+    #setPopupOpenPosition(root, popup, dim[0], dim[1])
+    popup.geometry(f"{dim[0]}x{dim[1]}+{875}+{300}")
     popup.protocol("WM_DELETE_WINDOW", lambda: exitPopup(popup))
 
     popup.transient(root)
@@ -96,9 +99,6 @@ def openPopup(root, title, dim):
     popup.resizable(False, False)
 
     popup.configure(bg=styles.BACKGROUND_COLOR)
-
-    #change root to have unused background color
-    #applyThemeRecursive(root, "Unused Window", styles.UNUSED_BACKGROUND_COLOR)
     
     return popup
 
@@ -214,9 +214,10 @@ def openCalendarPopup(root, dateEntryWidget):
     popup.grab_set()
     popup.resizable(False, False)
     popup.configure(bg=styles.BACKGROUND_COLOR)
-    setPopupOpenPosition(root, popup, width=None, height=None)
 
-    cal = Calendar(popup, selectmode="day", date_pattern="yyyy-mm-dd", **styles.getCalendarStyle())
+    popup.geometry(f"+{875}+{300}")
+
+    cal = Calendar(popup, date_pattern="yyyy-mm-dd", **styles.getCalendarStyle())
     cal.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
 
     hourLabel = makeStaticLabel(root, popup, "Hour: (0-23)")
@@ -235,8 +236,6 @@ def openCalendarPopup(root, dateEntryWidget):
     timeGuideLabel.grid(row=3, column=0, sticky="ew", columnspan=3, pady=5)
     timeGuideLabel.configure(foreground="gray38")
 
-
-
     def confirmDate():
         date = cal.selection_get().strftime("%Y-%m-%d")
         hour = hourVar.get().zfill(2)
@@ -246,3 +245,5 @@ def openCalendarPopup(root, dateEntryWidget):
         popup.destroy()
 
     ttk.Button(popup, text="Confirm", command=confirmDate).grid(row=4, column=0, columnspan=3, pady=(5, 15))
+
+

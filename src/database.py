@@ -7,11 +7,10 @@ from platformdirs import user_data_dir
 
 def getDbPath():
     app_name = "TradingNotes"
-    app_author = "Harry Sharp" #me
 
-    appdata = Path(user_data_dir(app_name, app_author))
+    appdata = Path(user_data_dir(appname=app_name, appauthor=False))
     appdata.mkdir(parents=True, exist_ok=True)
-    messagebox.showinfo("Path", f"{appdata} / tradingnotes")
+    #messagebox.showinfo("Path", f"{appdata}")
     return appdata / "TradingNotes.db"
 
 def connect():
@@ -90,10 +89,11 @@ def executeSelectQuery(query):
 
 class trade:
     def __init__(
-        self, entryDate, exitDate, marketStrucutre,
+        self, id, entryDate, exitDate, marketStrucutre,
         type, bias, risk, result, emotions, takeaways, 
         accountType, rewardRatio,
     ):
+        self.id = id
         self.entryDate = entryDate
         self.exitDate = exitDate
         self.marketStructure = marketStrucutre
@@ -112,11 +112,11 @@ def readIntoClasses(rows):
     assert rows is not None, "Rows is None"
     trades = []
     for row in rows:
-        assert len(row) == 11, f"Unexpected row length {len(row)}"
+        assert len(row) == 12, f"Unexpected row length {len(row)}"
         trades.append(trade(
             row[0], row[1], row[2], row[3],
             row[4], row[5], row[6], row[7],
-            row[8], row[9], row[10]
+            row[8], row[9], row[10], row[11]
         ))
     return trades
 

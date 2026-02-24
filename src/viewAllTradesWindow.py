@@ -1,4 +1,5 @@
 import tinker
+from tkinter import messagebox
 import database
 
 
@@ -20,14 +21,16 @@ def initViewWindow(root):
 
     #Get all data to display
     rows = database.executeSelectQuery("SELECT * FROM Trades")
-    #assert len(rows) != 0, "Rows is length of 0"
-    temp = 1
-    for row in rows:
-        tinker.makeStaticLabel(popup, container,f"{row.entryDate}, {row.bias}" ).grid(row=temp, column=0)
-        temp += 1
-
-
     trades = database.readIntoClasses(rows)
+    counter = 1
+    for trade in trades:
+        tempL = tinker.makeStaticLabel(popup, container, f"Entry Date: {trade.entryDate}")
+        tempL.grid(row=counter, column=0)
+        tempL.configure(anchor="center")
+        counter += 1
+        #messagebox.showinfo("Testing", row)
+
+
 
 
 

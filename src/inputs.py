@@ -1,5 +1,6 @@
 import tinker
 import styles
+import tkinter as tk
 
 
 def addLabel(popup, container, text, row, leftPad=10):
@@ -37,4 +38,11 @@ def addCombo(container, list, inputDict, name, row, function, leftPad=10):
     combo.bind("<FocusIn>", function)
     inputDict[name] = combo 
     return combo
+
+
+def getDataFromWidget(widget):
+    if isinstance(widget, tk.Text):
+        return widget.get("1.0", "end-1c") 
+    else:
+        return widget.get()
 

@@ -5,12 +5,13 @@ from tkinter import messagebox
 from platformdirs import user_data_dir
 
 
-
 def getDbPath():
-    appdata = Path.home() / "AppData" / "Local" / "TradingNotes"
+    app_name = "TradingNotes"
+    app_author = "Harry Sharp" #me
+
+    appdata = Path(user_data_dir(app_name, app_author))
     appdata.mkdir(parents=True, exist_ok=True)
     return appdata / "TradingNotes.db"
-
 
 def connect():
     return sqlite3.connect(getDbPath())

@@ -233,8 +233,7 @@ def openCalendarPopup(root, dateEntryWidget):
 
     timeGuideLabel = makeStaticLabel(root, popup, "Please Note! Use 24h time")
     timeGuideLabel.grid(row=3, column=0, sticky="ew", columnspan=3, pady=5)
-    timeGuideLabel.configure(foreground="gray38")
-
+    timeGuideLabel.configure(foreground="gray38", anchor="center")
 
 
     def confirmDate():

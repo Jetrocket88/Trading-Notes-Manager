@@ -11,6 +11,7 @@ def getDbPath():
 
     appdata = Path(user_data_dir(app_name, app_author))
     appdata.mkdir(parents=True, exist_ok=True)
+    messagebox.showinfo("Path", f"{appdata} / tradingnotes")
     return appdata / "TradingNotes.db"
 
 def connect():
@@ -66,3 +67,66 @@ def insertToDb(data):
         messagebox.showerror("Insert to Database Error", str(e))
     finally:
         conn.close()
+
+
+def executeSelectQuery(query):
+    try:
+        conn = connect()
+        cur = conn.cursor()
+
+        cur.execute(query)
+
+        rows = cur.fetchall()
+
+    except sqlite3.Error as e:
+        messagebox.showerror("Database Error", "Failed to fetch all data from database")
+        return None
+
+    finally:
+        if conn:
+            conn.close()
+
+    return rows
+
+class trade:
+    def __init__(
+        self, entryDate, exitDate, marketStrucutre,
+        type, bias, risk, result, emotions, takeaways, 
+        accountType, rewardRatio,
+    ):
+        self.entryDate = entryDate
+        self.exitDate = exitDate
+        self.marketStructure = marketStrucutre
+        self.type = type
+        self.bias = bias
+        self.risk = risk
+        self.result = result
+        self.emotions = emotions
+        self.takeaways = takeaways
+        self.accountType = accountType
+        self.rewardRatio = rewardRatio
+
+
+
+def readIntoClasses(rows):
+    assert rows is not None, "Rows is None"
+    trades = []
+    for row in rows:
+        assert len(row) == 11, f"Unexpected row length {len(row)}"
+        trades.append(trade(
+            row[0], row[1], row[2], row[3],
+            row[4], row[5], row[6], row[7],
+            row[8], row[9], row[10]
+        ))
+    return trades
+
+
+
+
+
+
+
+
+
+
+

@@ -32,6 +32,7 @@ def initDb():
                 takeaways TEXT NOT NULL,
                 accountType TEXT NOT NULL,
                 rewardRatio REAL NOT NULL,
+                symbol TEXT NOT NULL,
 
                 CHECK(result IN ("win", "loss", "be")),
                 CHECK(type IN ("inter-day", "swing")),
@@ -51,12 +52,13 @@ def insertToDb(data):
         cursor.execute("""
             INSERT INTO Trades (
                 entryTime, exitTime, marketStructure, type, bais,
-                risk, result, emotions, takeaways, accountType, rewardRatio
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                risk, result, emotions, takeaways, accountType, rewardRatio, symbol 
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
             data["entryDate"], data["exitDate"], data["marketStructure"], data["type"].lower(), 
             data["bias"], data["risk"], data["result"].lower(), data["emotions"],
-            data["takeaways"], data["accountType"].lower(), data["rewardRatio"] 
+            data["takeaways"], data["accountType"].lower(), data["rewardRatio"], 
+            data["symbol"]
         ))
         conn.commit()
         messagebox.showinfo("Success", "Trade added")
@@ -76,7 +78,7 @@ def executeSelectQuery(query):
         rows = cur.fetchall()
 
     except sqlite3.Error as e:
-        messagebox.showerror("Database Error", "Failed to fetch all data from database")
+        messagebox.showerror("Database Error", f"Failed to fetch all data from database, {str(e)}")
         return None
 
     finally:
@@ -89,7 +91,7 @@ class trade:
     def __init__(
         self, id, entryDate, exitDate, marketStrucutre,
         type, bias, risk, result, emotions, takeaways, 
-        accountType, rewardRatio,
+        accountType, rewardRatio, symbol 
     ):
         self.id = id
         self.entryDate = entryDate
@@ -103,6 +105,7 @@ class trade:
         self.takeaways = takeaways
         self.accountType = accountType
         self.rewardRatio = rewardRatio
+        self.symbol = symbol
 
 
 
@@ -110,11 +113,12 @@ def readIntoClasses(rows):
     assert rows is not None, "Rows is None"
     trades = []
     for row in rows:
-        assert len(row) == 12, f"Unexpected row length {len(row)}"
+        assert len(row) == 13, f"Unexpected row length {len(row)}"
         trades.append(trade(
             row[0], row[1], row[2], row[3],
             row[4], row[5], row[6], row[7],
-            row[8], row[9], row[10], row[11]
+            row[8], row[9], row[10], row[11],
+            row[12]
         ))
     return trades
 

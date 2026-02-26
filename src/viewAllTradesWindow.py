@@ -15,9 +15,15 @@ class TradeCard(tk.Frame):
     def __init__(self, parent, tradeData, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.tradeData = tradeData
-        #self.configure(relief="ridge", bg=2, padx=10, pady=10)
+        self.configure(relief="ridge", bd=2, padx=10, pady=10)
+
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=0)
+
+
+        inputs.addLabel(self, self, tradeData.symbol, row=1)
+
         
-        #symbolLabel = inputs.addLabel(self, self, tradeData.symbol)
 
 
 def initViewWindow(root):
@@ -41,6 +47,8 @@ def initViewWindow(root):
     trades = database.readIntoClasses(rows)
     for trade in trades:
         pass
+    card = TradeCard(container, trades[0])
+    card.grid(row=1, column=0)
 
 
 

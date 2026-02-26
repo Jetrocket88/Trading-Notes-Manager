@@ -6,6 +6,24 @@ from tkinter import messagebox
 import tkinter as tk
 
 
+#DEBUGGING 
+def fillWithDummyData(inputDict):
+    inputDict["entryDate"].insert(0, "2009-9-9")
+    inputDict["exitDate"].insert(0, "2009-9-9")
+    inputDict["marketStructure"].insert("1.0", "well structured")
+    inputDict["type"].insert(0, "Swing")
+    inputDict["bias"].insert("1.0", "very biased")
+    inputDict["risk"].insert(0, "4")
+    inputDict["result"].insert(0, "Win")
+    inputDict["emotions"].insert("1.0", "Very angery")
+    inputDict["takeaways"].insert("1.0", "chinese mate")
+    inputDict["accountType"].insert(0, "Live")
+    inputDict["rewardRatio"].insert(0, "8")
+    inputDict["symbol"].insert(0, "DXY")
+
+
+
+
 def clearSelection(event):
     event.widget.selection_clear()
 
@@ -31,7 +49,7 @@ def handleSubmitData(popup, inputDict):
         return None
     
     database.insertToDb(data)
-    popup.close()
+    popup.destroy()
 
 
 
@@ -112,13 +130,16 @@ def initTradeWindow(root):
     inputs.addInput(container, inputDict, "rewardRatio", row=21)
 
 
-    inputs.addLabel(popup, container, "Pair",  row=22)
+    #symbol
+    inputs.addLabel(popup, container, "Symbol",  row=22)
     inputs.addHelp(popup, container, "Example: DXY, GBG/USD\nCan be in any format you like", row=23)
-    inputs.addInput(container, inputDict,  "pair", row=23)
+    inputs.addInput(container, inputDict, "symbol", row=23)
 
 
     submitButton = inputs.addButton(container, "Submit", lambda: handleSubmitData(popup, inputDict), row=24)
     submitButton.grid(columnspan=3, column=0, sticky="ew", pady=(30, 10))
+
+    inputs.addButton(container, "DEBUG: FILL WITH DATA", lambda: fillWithDummyData(inputDict), row=25)
 
     return popup
 

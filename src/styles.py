@@ -271,6 +271,8 @@ def initStyle(root):
     root.option_add("*TCombobox*highlightColor", FIELD_COLOR)
     root.option_add("*TCombobox*background", FIELD_COLOR)
     root.option_add("*TCombobox*Entry*background", FIELD_COLOR)
+
+    style.configure("TESTING.TFrame", background="red")
     
     return style
 
@@ -294,3 +296,4 @@ def getCalendarStyle():
         "todaybackground": FIELD_COLOR,
         "todayforeground": FOREGROUND_COLOR,
     }
+

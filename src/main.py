@@ -14,6 +14,7 @@ import ctypes
 import sys
 
 
+
 if __name__ == "__main__":
     if sys.platform == "win32":
         ctypes.windll.shcore.SetProcessDpiAwareness(1)

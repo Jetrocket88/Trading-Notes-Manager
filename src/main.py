@@ -22,6 +22,9 @@ if __name__ == "__main__":
     w, h = helpers.screenRes() 
     root = tinker.initWindow(globals.WIDTH, globals.HEIGHT, (w// 2 - globals.WIDTH // 2, h // 2 - globals.HEIGHT // 2))
 
+    #TODO add custom bar to make UX better
+    #root.overrideredirect(True)
+
 
     styles.initStyle(root)
 

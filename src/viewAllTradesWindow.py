@@ -1,6 +1,23 @@
 import tinker
-from tkinter import messagebox
+import inputs
 import database
+
+import tkinter as tk
+
+#initial ideas
+#Pair, profit / loss, entryDate, long / short
+# ------------------------
+# | AAPL      +£120     |
+# | 12/02/26  Long      |
+# ------------------------
+
+class TradeCard(tk.Frame):
+    def __init__(self, parent, tradeData, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.tradeData = tradeData
+        #self.configure(relief="ridge", bg=2, padx=10, pady=10)
+        
+        #symbolLabel = inputs.addLabel(self, self, tradeData.symbol)
 
 
 def initViewWindow(root):
@@ -22,14 +39,8 @@ def initViewWindow(root):
     #Get all data to display
     rows = database.executeSelectQuery("SELECT * FROM Trades")
     trades = database.readIntoClasses(rows)
-    counter = 1
     for trade in trades:
-        tempL = tinker.makeStaticLabel(popup, container, f"Entry Date: {trade.entryDate}")
-        tempL.grid(row=counter, column=0)
-        tempL.configure(anchor="center")
-        counter += 1
-        #messagebox.showinfo("Testing", row)
-
+        pass
 
 
 

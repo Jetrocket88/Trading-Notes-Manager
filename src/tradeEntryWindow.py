@@ -1,7 +1,9 @@
 import tinker
 import inputs
 import database
+
 from tkinter import messagebox
+import tkinter as tk
 
 
 def clearSelection(event):
@@ -13,7 +15,7 @@ def addTodaysDateToWidget(widget, text, position="end"):
 
 
 
-def handleSubmitData(inputDict):
+def handleSubmitData(popup, inputDict):
     data = {}
     errors = []
 
@@ -29,6 +31,7 @@ def handleSubmitData(inputDict):
         return None
     
     database.insertToDb(data)
+    popup.close()
 
 
 
@@ -95,7 +98,7 @@ def initTradeWindow(root):
     takeawayGuide = "What worked? What didn't?"
     inputs.addLabel(popup, container, "Takeaways", row=16)
     inputs.addHelp(popup, container, takeawayGuide, row=17, column=2)
-    inputs.addTextarea(container, inputDict, "takeaway", row=17, height=3)
+    inputs.addTextarea(container, inputDict, "takeaways", row=17, height=3)
 
     #accountType
     inputs.addLabel(popup, container, "Account Type", row=18)
@@ -108,7 +111,13 @@ def initTradeWindow(root):
 
     inputs.addInput(container, inputDict, "rewardRatio", row=21)
 
-    submitButton = inputs.addButton(container, "Submit", lambda: handleSubmitData(inputDict), row=22)
+
+    inputs.addLabel(popup, container, "Pair",  row=22)
+    inputs.addHelp(popup, container, "Example: DXY, GBG/USD\nCan be in any format you like", row=23)
+    inputs.addInput(container, inputDict,  "pair", row=23)
+
+
+    submitButton = inputs.addButton(container, "Submit", lambda: handleSubmitData(popup, inputDict), row=24)
     submitButton.grid(columnspan=3, column=0, sticky="ew", pady=(30, 10))
 
     return popup

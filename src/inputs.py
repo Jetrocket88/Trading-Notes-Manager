@@ -3,9 +3,9 @@ import styles
 import tkinter as tk
 
 
-def addLabel(popup, container, text, row, leftPad=10):
+def addLabel(popup, container, text, row, leftPad=10, sticky="w"):
     label = tinker.makeStaticLabel(popup, container, text)
-    label.grid(row=row, column=0, pady=(10, 0), padx=leftPad, sticky="w")
+    label.grid(row=row, column=0, pady=(10, 0), padx=leftPad, sticky=sticky)
     return label
 
 def addHelp(popup, container, text, row, wrap=200, sticky="ns", column=1):
